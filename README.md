@@ -24,10 +24,9 @@ $ npm start
 
 ## APIs
 
-|Type   |API                        |Response           |
-|-------|---------------------------|-------------------|
-|<td colspan=3>google oauth                             
-|post   |/oauth/google              |JWT token          |
+|Type   |API                        |Description            |Response           |
+|-------|---------------------------|-----------------------|-------------------|
+|post   |/oauth/google              |google oauth api       |JWT token          |
 
 ### Todo
 
