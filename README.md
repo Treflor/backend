@@ -1,5 +1,10 @@
 # Treflor NodeJS backend
 
+[Treflor APIs deployed app on heroku](https://api-treflor.herokuapp.com)
+
+## Description
+This is a `expressJS` server app for **treflor** backend.We used google APIs for authentication and many things will be there in future.As the database we used `mongoDB` which is hosted on [mongoDB](https://www.mongodb.com/).You can find hosted app on [Heroku](https://www.mongodb.com/) by [this Link](https://api-treflor.herokuapp.com).
+
 ### Instructions to run the project
 
 clone the repository
@@ -41,4 +46,4 @@ project will starts at `localhost:3000/` in development enviroment.
 
 ### Todo
 
-- [ ] backend should connect with mongodb still not configured.
+- [x] backend should connect with mongodb still not configured.
