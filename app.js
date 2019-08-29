@@ -6,9 +6,13 @@ var logger = require('morgan');
 var cors = require('cors');
 var bodyParser = require('body-parser');
 const dotenv = require('dotenv');
+const mongoose = require('mongoose');
 
 var app = express();
 dotenv.config();
+
+mongoose.Promise = global.Promise;
+mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true });
 
 var indexRouter = require('./routes/index');
 
