@@ -26,5 +26,9 @@ $ npm start
 
 |Type   |API                        |Response           |
 |-------|---------------------------|-------------------|
-|<td colspan=3>google oauth                             |
+|<td colspan=3>google oauth                             
 |post   |/oauth/google              |JWT token          |
+
+### Todo
+
+- [ ] backend should connect with mongodb still not configured.
