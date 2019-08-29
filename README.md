@@ -26,5 +26,5 @@ $ npm start
 
 |Type   |API                        |Response           |
 |-------|---------------------------|-------------------|
-|google oauth                                           |
+|<td colspan=3>google oauth                             |
 |post   |/oauth/google              |JWT token          |
