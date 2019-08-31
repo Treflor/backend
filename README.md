@@ -40,9 +40,27 @@ project will starts at `localhost:3000/` in development enviroment.
 
 ## APIs
 
-|Type   |API                        |Description            |Response           |
-|-------|---------------------------|-----------------------|-------------------|
-|post   |/oauth/google              |google oauth api       |JWT token          |
+### Google oauth api
+google oauth Sign in Api.Exchange access token with profile details and store it in mongodb Database.Then convert mongodb document id into jwt and send it back.
+
+|Type   |API                        |Response           |
+|-------|---------------------------|-------------------|
+|post   |/oauth/google              |json web token     |
+
+required fields</br>
+- `body`
+    - `access_token` : from google sign in
+
+### Current user api
+return current user according to the jwt
+
+|Type   |API                        |Response           |
+|-------|---------------------------|-------------------|
+|get    |/user                      |current user       |
+
+required fields</br>
+- `headers`
+    - `Authorization` : from sign in
 
 ### Todo
 
