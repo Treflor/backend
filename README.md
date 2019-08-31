@@ -41,18 +41,45 @@ project will starts at `localhost:3000/` in development enviroment.
 ## APIs
 
 ### Google oauth api
-google oauth Sign in Api.Exchange access token with profile details and store it in mongodb Database.Then convert mongodb document id into jwt and send it back.
+Exchange access token with profile details and store it in `mongodb` Database.Then convert `mongodb` document id into jwt and send it back.
 
-|Type   |API                        |Response           |
-|-------|---------------------------|-------------------|
-|post   |/oauth/google              |json web token     |
+|Type   |API                        |Response                         |
+|-------|---------------------------|---------------------------------|
+|post   |/oauth/google              |json web token with id and method|
 
 required fields</br>
 - `body`
-    - `access_token` : from google sign in
+    - `access_token` : required : from google sign in 
+
+### Local sign up oauth api
+Create a user according to the user email and password in `mongodb` Database.Password will store after encrypt using `bcryptjs`.Then convert `mongodb` document id into jwt and send it back.
+
+|Type   |API                        |Response                         |
+|-------|---------------------------|---------------------------------|
+|post   |/oauth/signup              |json web token with id and method|
+
+required fields</br>
+- `body`
+    - `email` : required
+    - `password` : required
+    - `family_name` : required
+    - `given_name` : required
+    - `photo` : 
+
+### Local Sign in oauth api
+Find user according to the email and password and convert `mongodb` document id into jwt and send it back.
+
+|Type   |API                        |Response                         |
+|-------|---------------------------|---------------------------------|
+|post   |/oauth/signin              |json web token with id and method|
+
+required fields</br>
+- `body`
+    - `email` : required 
+    - `password` : required 
 
 ### Current user api
-return current user according to the jwt
+return current user according to the jwt and method used to sign in
 
 |Type   |API                        |Response           |
 |-------|---------------------------|-------------------|
@@ -60,8 +87,11 @@ return current user according to the jwt
 
 required fields</br>
 - `headers`
-    - `Authorization` : from sign in
+    - `Authorization` : jwt from sign in
 
-### Todo
+## Overview
 
-- [x] backend should connect with mongodb still not configured.
+- [x] Google signin api
+- [x] Local signup api
+- [x] Local signin api
+- [x] get user api
