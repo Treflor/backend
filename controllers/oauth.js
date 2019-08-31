@@ -3,11 +3,7 @@ const config = require('../configuration');
 
 signToken = user => {
     return JWT.sign({
-        iss: 'treflor',
         id: user.id,
-        iat: new Date().getTime(), //current time
-        //current time + 30 days ahead
-        exp: new Date().setDate(new Date().getDate() + 30)
     }, config.JWT_SECRET);
 }
 
