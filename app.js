@@ -12,7 +12,9 @@ var app = express();
 dotenv.config();
 
 mongoose.Promise = global.Promise;
-mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true });
+mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true })
+  .then(() => console.log("MongoBD connected successfully!"))
+  .catch((err) => console.log(err));
 
 var indexRouter = require('./routes/index');
 
