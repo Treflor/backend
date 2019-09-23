@@ -11,7 +11,7 @@ signToken = (user, method) => {
     }, config.JWT_SECRET);
 }
 
-uploadProfile = (base64Image, email) => {
+uploadProfile = async (base64Image, email) => {
     var char = base64Image.charAt(0);
     var mimeType = '';
     switch (char) {
@@ -31,18 +31,14 @@ uploadProfile = (base64Image, email) => {
     // Upload the image to the bucket
     var file = bucket.file('profile-images/' + fileName);
 
-    file.save(imageBuffer, {
+    var result = await file.save(imageBuffer, {
         metadata: { contentType: mimeType },
         public: true,
         validation: 'md5'
-    }, function (error) {
-
-        if (error) {
-            return console.log('Unable to upload the image.');
-        }
-
-        return console.log('Uploaded');
     });
+
+    return "https://storage.cloud.google.com/treflor/profile-images/" + fileName;
+
 }
 
 module.exports = {
@@ -67,7 +63,8 @@ module.exports = {
         );
 
         if (foundUser) {
-            var realFile = Buffer.from(req.body.photo, "base64");
+            var imageUrl = await uploadProfile(user.photo, user.email);
+
             // Let's merge them?
             foundUser.methods.push('local')
             foundUser.local = {
@@ -75,7 +72,7 @@ module.exports = {
                 password: user.password,
                 family_name: user.family_name,
                 given_name: user.given_name,
-                photo: user.photo,
+                photo: imageUrl,
             }
             await foundUser.save()
             // Generate the token
@@ -84,7 +81,7 @@ module.exports = {
             return res.status(200).json({ token });
         }
 
-        uploadProfile(user.photo, user.email);
+        var imageUrl = await uploadProfile(user.photo, user.email);
         // Create a new user
         const newUser = new User({
             methods: ['local'],
@@ -93,7 +90,7 @@ module.exports = {
                 password: user.password,
                 family_name: user.family_name,
                 given_name: user.given_name,
-                photo: user.photo,
+                photo: imageUrl,
             }
         });
 
