@@ -8,6 +8,7 @@ var bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const multer = require('multer');
+const fileUpload = require('express-fileupload');
 
 var app = express();
 dotenv.config();
@@ -31,6 +32,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(multer().array());
+app.use(fileUpload());
 
 var indexRouter = require('./routes/index');
 app.use('/', indexRouter);
@@ -45,6 +47,8 @@ app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+  console.log(err.message);
 
   // render the error page
   res.status(err.status || 500);

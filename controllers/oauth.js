@@ -1,12 +1,48 @@
 const JWT = require('jsonwebtoken');
+var mimeTypes = require('mimetypes');
 const config = require('../configuration');
 const User = require('../models/user');
+const gcs = require('../helpers/cloud-storage');
 
 signToken = (user, method) => {
     return JWT.sign({
         id: user.id,
         method: method,
     }, config.JWT_SECRET);
+}
+
+uploadProfile = (base64Image, email) => {
+    var char = base64Image.charAt(0);
+    var mimeType = '';
+    switch (char) {
+        case '/':
+            mimeType = "image/jpeg";
+            break;
+        case 'i':
+            mimeType = "image/png";
+            break;
+    }
+    var fileName = email + '-original.' + mimeTypes.detectExtension(mimeType);
+    var imageBuffer = Buffer.from(base64Image, 'base64');
+
+    // Instantiate the GCP Storage instance
+    bucket = gcs.bucket('treflor');
+
+    // Upload the image to the bucket
+    var file = bucket.file('profile-images/' + fileName);
+
+    file.save(imageBuffer, {
+        metadata: { contentType: mimeType },
+        public: true,
+        validation: 'md5'
+    }, function (error) {
+
+        if (error) {
+            return console.log('Unable to upload the image.');
+        }
+
+        return console.log('Uploaded');
+    });
 }
 
 module.exports = {
@@ -31,6 +67,7 @@ module.exports = {
         );
 
         if (foundUser) {
+            var realFile = Buffer.from(req.body.photo, "base64");
             // Let's merge them?
             foundUser.methods.push('local')
             foundUser.local = {
@@ -47,6 +84,7 @@ module.exports = {
             return res.status(200).json({ token });
         }
 
+        uploadProfile(user.photo, user.email);
         // Create a new user
         const newUser = new User({
             methods: ['local'],
