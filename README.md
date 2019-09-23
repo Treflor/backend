@@ -31,12 +31,18 @@ DATABASE_URL=[String]
 |CLIENT_SECRET  |`String`       |Can be obtain from google APIs         |
 |DATABASE_URL   |`String`       |Mongodb url for database               |
 
-run the project
+run the project in production environment
 ```bash
 $ npm start
 ```
 
-project will starts at `localhost:3000/` in development enviroment.
+
+run the project in production environment
+```bash
+$ npm run dev
+```
+
+project will starts at `localhost:3000/` in development environment.
 
 ## APIs
 
