@@ -37,7 +37,7 @@ uploadProfile = async (base64Image, email) => {
         validation: 'md5'
     });
 
-    return "https://storage.cloud.google.com/treflor/profile-images/" + fileName;
+    return "https://storage.googleapis.com/treflor/profile-images/" + fileName;
 
 }
 
