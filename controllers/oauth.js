@@ -1,12 +1,44 @@
 const JWT = require('jsonwebtoken');
+var mimeTypes = require('mimetypes');
 const config = require('../configuration');
 const User = require('../models/user');
+const gcs = require('../helpers/cloud-storage');
 
 signToken = (user, method) => {
     return JWT.sign({
         id: user.id,
         method: method,
     }, config.JWT_SECRET);
+}
+
+uploadProfile = async (base64Image, email) => {
+    var char = base64Image.charAt(0);
+    var mimeType = '';
+    switch (char) {
+        case '/':
+            mimeType = "image/jpeg";
+            break;
+        case 'i':
+            mimeType = "image/png";
+            break;
+    }
+    var fileName = email + '-original.' + mimeTypes.detectExtension(mimeType);
+    var imageBuffer = Buffer.from(base64Image, 'base64');
+
+    // Instantiate the GCP Storage instance
+    bucket = gcs.bucket('treflor');
+
+    // Upload the image to the bucket
+    var file = bucket.file('profile-images/' + fileName);
+
+    var result = await file.save(imageBuffer, {
+        metadata: { contentType: mimeType },
+        public: true,
+        validation: 'md5'
+    });
+
+    return "https://storage.googleapis.com/treflor/profile-images/" + fileName;
+
 }
 
 module.exports = {
@@ -31,6 +63,8 @@ module.exports = {
         );
 
         if (foundUser) {
+            var imageUrl = await uploadProfile(user.photo, user.email);
+
             // Let's merge them?
             foundUser.methods.push('local')
             foundUser.local = {
@@ -38,7 +72,7 @@ module.exports = {
                 password: user.password,
                 family_name: user.family_name,
                 given_name: user.given_name,
-                photo: user.photo,
+                photo: imageUrl,
             }
             await foundUser.save()
             // Generate the token
@@ -47,6 +81,7 @@ module.exports = {
             return res.status(200).json({ token });
         }
 
+        var imageUrl = await uploadProfile(user.photo, user.email);
         // Create a new user
         const newUser = new User({
             methods: ['local'],
@@ -55,7 +90,7 @@ module.exports = {
                 password: user.password,
                 family_name: user.family_name,
                 given_name: user.given_name,
-                photo: user.photo,
+                photo: imageUrl,
             }
         });
 
