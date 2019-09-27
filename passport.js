@@ -15,7 +15,7 @@ passport.use(new JWTStrategy({
     try {
         // Find the user specified in token
         const user = await User.findById(payload.id);
-        user.method = payload.method;
+
         // If user doesn't exists, handle it
         if (!user) {
             return done(null, false);
@@ -23,6 +23,7 @@ passport.use(new JWTStrategy({
 
         //edited
         // Otherwise, return the user
+        user.method = payload.method;
         req.user = user;
         done(null, user);
     } catch (error) {
