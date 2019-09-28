@@ -33,7 +33,6 @@ passport.use(new JWTStrategy({
 
 passport.use('google',
     new GooglePlusTokenStrategy({
-        callbackURL: '/auth/google/redirect',
         clientID: config.oauth.google.clientID,
         clientSecret: config.oauth.google.clientSecret
     }, async (accessToken, refreshToken, profile, done) => {
@@ -53,7 +52,9 @@ passport.use('google',
                     email: profile.emails[0].value,
                     given_name: profile.name.givenName,
                     family_name: profile.name.familyName,
-                    photo: profile.photos[0].value
+                    photo: profile.photos[0].value,
+                    gender: "Select",
+                    birthday: 0,
                 }
                 await existingUser.save();
                 return done(null, existingUser);
@@ -66,7 +67,9 @@ passport.use('google',
                     email: profile.emails[0].value,
                     given_name: profile.name.givenName,
                     family_name: profile.name.familyName,
-                    photo: profile.photos[0].value
+                    photo: profile.photos[0].value,
+                    gender: "Select",
+                    birthday: 0,
                 }
             });
             await newUser.save();
