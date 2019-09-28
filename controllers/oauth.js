@@ -73,6 +73,8 @@ module.exports = {
                 family_name: user.family_name,
                 given_name: user.given_name,
                 photo: imageUrl,
+                gender: user.gender,
+                birthday: user.birthday
             }
             await foundUser.save()
             // Generate the token
@@ -91,6 +93,8 @@ module.exports = {
                 family_name: user.family_name,
                 given_name: user.given_name,
                 photo: imageUrl,
+                gender: user.gender,
+                birthday: user.birthday
             }
         });
 
