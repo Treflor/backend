@@ -42,7 +42,13 @@ const userSchema = new mongoose.Schema({
         },
         photo: {
             type: String
-        }
+        },
+        gender: {
+            type: String
+        },
+        birthday: {
+            type: Number
+        },
     },
 });
 

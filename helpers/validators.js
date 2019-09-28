@@ -21,6 +21,8 @@ module.exports = {
             password2: Joi.string().required(),
             family_name: Joi.string().required(),
             given_name: Joi.string().required(),
+            gender: Joi.string(),
+            birthday: Joi.number(),
             photo: Joi.string(),
         }),
 
