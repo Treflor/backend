@@ -23,9 +23,20 @@ module.exports = {
             given_name: Joi.string().required(),
             photo: Joi.string(),
         }),
+
         authSignInSchema: Joi.object().keys({
             email: Joi.string().email().required(),
             password: Joi.string().required(),
-        })
+        }),
+
+        updateUserSchema: Joi.object().keys({
+            email: Joi.string().email().required(),
+            password: Joi.string().required(),
+            password2: Joi.string().required(),
+            family_name: Joi.string().required(),
+            given_name: Joi.string().required(),
+            photo: Joi.string(),
+        }),
+
     }
 }

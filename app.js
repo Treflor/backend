@@ -17,21 +17,22 @@ mongoose.Promise = global.Promise;
 mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true })
   .then(() => console.log("MongoBD connected successfully!"))
   .catch((err) => console.log(err));
+mongoose.set('useFindAndModify', false);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
-app.use(express.json({limit:'50mb'}));
-app.use(express.urlencoded({ limit:'50mb',extended: true }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(cors());
-app.use(bodyParser.json({limit:'50mb'}));
-app.use(bodyParser.urlencoded({ limit:'50mb',extended: true }));
-app.use(multer().array({limit:'50mb'}));
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+app.use(multer().array({ limit: '50mb' }));
 app.use(fileUpload());
 
 var indexRouter = require('./routes/index');
