@@ -62,6 +62,8 @@ module.exports = {
             { "google.email": user.email },
         );
 
+    
+
         if (foundUser) {
             var imageUrl = await uploadProfile(user.photo, user.email);
 
@@ -82,7 +84,6 @@ module.exports = {
             // Respond with token
             return res.status(200).json({ token });
         }
-
         var imageUrl = await uploadProfile(user.photo, user.email);
         // Create a new user
         const newUser = new User({
