@@ -16,20 +16,30 @@ then create a new project and enable [google+ API](https://console.developers.go
 > [Tutorial to setup Google OAuth](https://youtu.be/JgSLf-HS5gg)
 
 
-Copy the `client id` and `client secret key`.Create a `.env` file in the root directory.Structure should like be bellow.
+Copy the `client id` and `client secret key`.Create a `.env` file in the root directory.
+<br>
+Create IAM Admin credentials at google api and copy `project_id`,`private_key` and `client_id` from the json and paste them in  `.env` file
+<br>
+Structure should like be bellow.
 ```
 JWT_SECRET=[String]
 CLIENT_ID=[String]
 CLIENT_SECRET=[String]
 DATABASE_URL=[String]
+PROJECT_ID=[String]
+PRIVATE_KEY=[String]
+CLIENT_EMAIL=[String]
 ```
 
-|Key            |Type           |Description                            |
-|---------------|---------------|---------------------------------------|
-|JWT_SECRET     |`String`       |Can be any `string` for generate jwt   |
-|CLIENT_ID      |`String`       |Can be obtain from google APIs         |
-|CLIENT_SECRET  |`String`       |Can be obtain from google APIs         |
-|DATABASE_URL   |`String`       |Mongodb url for database               |
+|Key            |Type           |Description                                    |
+|---------------|---------------|-----------------------------------------------|
+|JWT_SECRET     |`String`       |Can be any `string` for generate jwt           |
+|CLIENT_ID      |`String`       |Can be obtain from google APIs                 |
+|CLIENT_SECRET  |`String`       |Can be obtain from google APIs                 |
+|DATABASE_URL   |`String`       |Mongodb url for database                       |
+|PROJECT_ID     |`String`       |Can be obtain from google apis IAM admin json  |
+|PRIVATE_KEY    |`String`       |Can be obtain from google apis IAM admin json  |
+|CLIENT_EMAIL   |`String`       |Can be obtain from google apis IAM admin json  |
 
 run the project in production environment
 ```bash
