@@ -45,7 +45,7 @@ module.exports = {
     googleOAuth: async (req, res, next) => {
         // Generate token
         const token = signToken(req.user, 'google');
-        res.status(200).json({ token });
+        res.status(200).json({ token ,success:true,message:"success"});
     },
 
     signUp: async (req, res, next) => {
