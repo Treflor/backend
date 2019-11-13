@@ -2,7 +2,7 @@ const JWT = require('jsonwebtoken');
 var mimeTypes = require('mimetypes');
 const config = require('../configuration');
 const User = require('../models/user');
-const gcs = require('../helpers/cloud-storage');
+const gcs = require('../cloud-storage');
 
 signToken = (user, method) => {
     return JWT.sign({
