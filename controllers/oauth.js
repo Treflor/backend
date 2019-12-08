@@ -26,7 +26,7 @@ uploadProfile = async (base64Image, email) => {
     var imageBuffer = Buffer.from(base64Image, 'base64');
 
     // Instantiate the GCP Storage instance
-    bucket = gcs.bucket('treflor');
+    bucket = gcs.bucket('treflor-bucket');
 
     // Upload the image to the bucket
     var file = bucket.file('profile-images/' + fileName);
@@ -37,7 +37,7 @@ uploadProfile = async (base64Image, email) => {
         validation: 'md5'
     });
 
-    return "https://storage.googleapis.com/treflor/profile-images/" + fileName;
+    return "https://storage.googleapis.com/treflor-bucket/profile-images/" + fileName;
 
 }
 
