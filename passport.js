@@ -1,5 +1,4 @@
 const passport = require('passport');
-const GooglePlusTokenStrategy = require('passport-google-plus-token');
 const GoogleTokenStrategy = require('passport-google-id-token');
 const JWTStrategy = require('passport-jwt').Strategy;
 const { ExtractJwt } = require('passport-jwt');
