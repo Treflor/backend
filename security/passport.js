@@ -4,8 +4,8 @@ const JWTStrategy = require('passport-jwt').Strategy;
 const { ExtractJwt } = require('passport-jwt');
 const LocalStrategy = require('passport-local').Strategy;
 
-const User = require('./models/user');
-const config = require('./configuration');
+const User = require('../models/user');
+const config = require('../configuration');
 
 passport.use(new JWTStrategy({
     jwtFromRequest: ExtractJwt.fromHeader('authorization'),

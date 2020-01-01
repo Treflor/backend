@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var passport = require('passport');
 
-const passportConf = require('../../passport');
+const passportConf = require('../../security/passport');
 const userController = require('../../controllers/user')
 const { validateBody, schemas } = require('../../helpers/validators');
 
