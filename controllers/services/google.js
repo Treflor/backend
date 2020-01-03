@@ -19,6 +19,28 @@ module.exports = {
             }
         });
 
-        res.send(response.data)
+
+        var data = {}
+
+        if (response.data.status == "OK") {
+            var data = {
+                bounds: response.data.routes[0].bounds,
+                distance: response.data.routes[0].legs[0].distance,
+                duration: response.data.routes[0].legs[0].duration,
+                end_address: response.data.routes[0].legs[0].end_address,
+                end_location: response.data.routes[0].legs[0].end_location,
+                start_address: response.data.routes[0].legs[0].start_address,
+                start_location: response.data.routes[0].legs[0].start_location,
+                points: response.data.routes[0].overview_polyline.points,
+                status: response.data.status,
+            };
+        }
+        else {
+            data = {
+                status: response.data.status,
+            };
+        }
+
+        res.send(data)
     }
 }
