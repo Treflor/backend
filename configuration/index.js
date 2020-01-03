@@ -5,5 +5,8 @@ module.exports = {
             clientID: process.env.CLIENT_ID,
             clientSecret: process.env.CLIENT_SECRET,
         }
+    },
+    google: {
+        apiKey: process.env.GOOGLE_API_KEY,
     }
 };
