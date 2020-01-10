@@ -35,7 +35,7 @@ uploadProfile = async (base64Image, email) => {
         metadata: { contentType: mimeType },
         public: true,
         validation: 'md5'
-    });
+    }).catch((e) => console.log(e));
 
     return "https://storage.googleapis.com/treflor-bucket/profile-images/" + fileName;
 
