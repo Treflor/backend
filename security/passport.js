@@ -1,11 +1,11 @@
 const passport = require('passport');
-const GooglePlusTokenStrategy = require('passport-google-plus-token');
+const GoogleTokenStrategy = require('passport-google-id-token');
 const JWTStrategy = require('passport-jwt').Strategy;
 const { ExtractJwt } = require('passport-jwt');
 const LocalStrategy = require('passport-local').Strategy;
 
-const User = require('./models/user');
-const config = require('./configuration');
+const User = require('../models/user');
+const config = require('../configuration');
 
 passport.use(new JWTStrategy({
     jwtFromRequest: ExtractJwt.fromHeader('authorization'),
@@ -32,28 +32,29 @@ passport.use(new JWTStrategy({
 }));
 
 passport.use('google',
-    new GooglePlusTokenStrategy({
+    new GoogleTokenStrategy({
         clientID: config.oauth.google.clientID,
-        clientSecret: config.oauth.google.clientSecret
-    }, async (accessToken, refreshToken, profile, done) => {
+        clientSecret: config.oauth.google.clientSecret,
+    }, async (parsedToken, googleToken, done) => {
+        var profile = parsedToken.payload;
         try {
             //finding the already exist user
-            let existingUser = await User.findOne({ 'google.id': profile.id });
+            let existingUser = await User.findOne({ 'google.id': googleToken });
             if (existingUser) {
                 return done(null, existingUser);
             }
 
             // check for email in local
-            existingUser = await User.findOne({ "local.email": profile.emails[0].value });
+            existingUser = await User.findOne({ "local.email": profile.email });
             if (existingUser) {
                 existingUser.methods.push('google');
                 existingUser.google = {
-                    id: profile.id,
-                    email: profile.emails[0].value,
-                    given_name: profile.name.givenName,
-                    family_name: profile.name.familyName,
-                    photo: profile.photos[0].value,
-                    gender: "Select",
+                    id: googleToken,
+                    email: profile.email,
+                    given_name: profile.given_name,
+                    family_name: profile.family_name,
+                    photo: profile.picture,
+                    gender: "",
                     birthday: 0,
                 }
                 await existingUser.save();
@@ -63,12 +64,12 @@ passport.use('google',
             var newUser = new User({
                 methods: ['google'],
                 google: {
-                    id: profile.id,
-                    email: profile.emails[0].value,
-                    given_name: profile.name.givenName,
-                    family_name: profile.name.familyName,
-                    photo: profile.photos[0].value,
-                    gender: "Select",
+                    id: googleToken,
+                    email: profile.email,
+                    given_name: profile.given_name,
+                    family_name: profile.family_name,
+                    photo: profile.picture,
+                    gender: "",
                     birthday: 0,
                 }
             });
