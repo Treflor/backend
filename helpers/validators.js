@@ -44,7 +44,7 @@ module.exports = {
             title: Joi.string().required(),
             guide: Joi.string().required(),
             date: Joi.number(),
-            photo: Joi.string(),
+            img: Joi.string().base64(),
         }),
 
     }

@@ -41,7 +41,6 @@ module.exports = {
                     foundUser.local.photo = url;
                     foundUser.save();
                 }
-
             });
             // Let's merge them?
             foundUser.methods.push('local')

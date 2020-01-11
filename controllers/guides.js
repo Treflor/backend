@@ -1,4 +1,6 @@
 const Guide = require('../models/guide');
+const storage = require('../services/cloud-storage');
+const shortid = require('shortid');
 
 module.exports = {
     getGuide: async (req, res, next) => {
@@ -21,7 +23,20 @@ module.exports = {
     },
 
     createGuide: async (req, res, next) => {
-        return new Guide(req.body).save()
+        var { guide, title, img, date } = req.body;
+        var guideObj = new Guide({ guide: guide, title: title, img: "", date: date });
+
+        storage.storeFile(Buffer.from(img, "base64"), 'guides', shortid.generate(), (err, url) => {
+            if (err) {
+                console.log("failed to upload guide photo");
+                console.log(err);
+            } else {
+                console.log("guide photo uploded");
+                guideObj.img = url;
+                guideObj.save();
+            }
+        });
+        guideObj.save()
             .then(guide => {
                 return res.json({ success: true, id: guide.id });
             })
