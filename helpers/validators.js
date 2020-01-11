@@ -35,8 +35,15 @@ module.exports = {
             email: Joi.string().email().required(),
             family_name: Joi.string().required(),
             given_name: Joi.string().required(),
-            photo: Joi.string(),
+            gender: Joi.string(),
             birthday: Joi.number(),
+            photo: Joi.string(),
+        }),
+
+        createGuideSchema: Joi.object().keys({
+            title: Joi.string().required(),
+            guide: Joi.string().required(),
+            date: Joi.number(),
             photo: Joi.string(),
         }),
 
