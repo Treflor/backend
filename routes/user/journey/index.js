@@ -8,6 +8,8 @@ const passportJWT = passport.authenticate('jwt', { session: false });
 // const { validateBody, schemas } = require('../../helpers/validators');
 
 // router.route('/edit').post(passportJWT, validateBody(schemas.updateUserSchema), userController.editUser);
-router.route('/insert').post(passportJWT, journeyController.insertJourney);
+router.route('/').post(passportJWT, journeyController.insertJourney);
+router.route('/:journeyId').get(passportJWT, journeyController.getJourney);
+router.route('/').get(passportJWT, journeyController.getAllJourney);
 
 module.exports = router;

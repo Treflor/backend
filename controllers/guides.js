@@ -16,6 +16,7 @@ module.exports = {
             return res.status(400).json({ error: 'Guide id not found' });
         }
     },
+    
     getAllGuides: async (req, res, next) => {
         return Guide.find().limit(req.query.limit).skip(req.skip).lean().exec().then(guides => {
             return res.status(200).json(guides);
