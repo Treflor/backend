@@ -33,7 +33,7 @@ module.exports = {
         );
 
         if (foundUser) {
-            storage.storeFile(Buffer.from(user.photo, "base64"), 'profile-pics', user.email, (err, url) => {
+            storage.storeFile(Buffer.from(user.photo, "base64"), 'profile-pics', user.email, async (err, url) => {
                 if (err) {
                     console.log("failed to upload profile pic");
                     console.log(err);
@@ -45,7 +45,7 @@ module.exports = {
                         password: user.password,
                         family_name: user.family_name,
                         given_name: user.given_name,
-                        photo = url,
+                        photo: url,
                         gender: user.gender,
                         birthday: user.birthday
                     }
@@ -57,25 +57,14 @@ module.exports = {
                 }
             });
         }
-        // Create a new user
-        const newUser = new User({
-            methods: ['local'],
-            local: {
-                email: user.email,
-                password: user.password,
-                family_name: user.family_name,
-                given_name: user.given_name,
-                gender: user.gender,
-                birthday: user.birthday
-            }
-        });
 
-        storage.storeFile(Buffer.from(user.photo, "base64"), 'profile-pics', user.email, (err, url) => {
+        storage.storeFile(Buffer.from(user.photo, "base64"), 'profile-pics', user.email, async (err, url) => {
             if (err) {
                 console.log("failed to upload profile pic");
                 console.log(err);
                 return res.status(500).json({ success: false, msg: "failed to upload profile pic" });
             } else {
+                // create new user
                 const newUser = new User({
                     methods: ['local'],
                     local: {
@@ -83,7 +72,7 @@ module.exports = {
                         password: user.password,
                         family_name: user.family_name,
                         given_name: user.given_name,
-                        photo = url,
+                        photo: url,
                         gender: user.gender,
                         birthday: user.birthday
                     }
