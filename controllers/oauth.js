@@ -37,26 +37,25 @@ module.exports = {
                 if (err) {
                     console.log("failed to upload profile pic");
                     console.log(err);
+                    return res.status(500).json({ success: false, msg: "failed to upload profile pic" });
                 } else {
-                    foundUser.local.photo = url;
-                    foundUser.save();
+                    foundUser.methods.push('local')
+                    foundUser.local = {
+                        email: user.email,
+                        password: user.password,
+                        family_name: user.family_name,
+                        given_name: user.given_name,
+                        photo = url,
+                        gender: user.gender,
+                        birthday: user.birthday
+                    }
+                    await foundUser.save();
+                    // Generate the token
+                    const token = signToken(foundUser, 'local');
+                    // Respond with token
+                    return res.status(200).json({ token });
                 }
             });
-            // Let's merge them?
-            foundUser.methods.push('local')
-            foundUser.local = {
-                email: user.email,
-                password: user.password,
-                family_name: user.family_name,
-                given_name: user.given_name,
-                gender: user.gender,
-                birthday: user.birthday
-            }
-            await foundUser.save()
-            // Generate the token
-            const token = signToken(foundUser, 'local');
-            // Respond with token
-            return res.status(200).json({ token });
         }
         // Create a new user
         const newUser = new User({
@@ -71,20 +70,29 @@ module.exports = {
             }
         });
 
-        await newUser.save();
-
-        // Generate the token
-        const token = signToken(newUser, 'local');
-        // Respond with token
-        res.status(200).json({ token });
-
         storage.storeFile(Buffer.from(user.photo, "base64"), 'profile-pics', user.email, (err, url) => {
             if (err) {
                 console.log("failed to upload profile pic");
                 console.log(err);
+                return res.status(500).json({ success: false, msg: "failed to upload profile pic" });
             } else {
-                newUser.local.photo = url;
-                newUser.save();
+                const newUser = new User({
+                    methods: ['local'],
+                    local: {
+                        email: user.email,
+                        password: user.password,
+                        family_name: user.family_name,
+                        given_name: user.given_name,
+                        photo = url,
+                        gender: user.gender,
+                        birthday: user.birthday
+                    }
+                });
+                await newUser.save();
+                // Generate the token
+                const token = signToken(newUser, 'local');
+                // Respond with token
+                res.status(200).json({ token });
             }
         });
     },
