@@ -109,7 +109,13 @@ const journeySchema = new mongoose.Schema({
         },
         title: {
             type: String
-        }
+        },
+        level: {
+            type: String
+        },
+        labels: {
+            type: [String]
+        },
     },
     tracked_locations: {
         type: String
