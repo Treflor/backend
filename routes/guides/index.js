@@ -1,17 +1,15 @@
 var express = require('express');
 var router = express.Router();
-var passport = require('passport');
 
-const passportConf = require('../../security/passport');
 const guidesController = require('../../controllers/guides');
 const { validateBody, schemas } = require('../../helpers/validators');
 
-const passportJWT = passport.authenticate('jwt', { session: false });
 
-router.route('/').get(passportJWT, guidesController.getAllGuides);
+router.route('/').get(guidesController.getAllGuides);
 
-router.route('/:guideId').get(passportJWT, guidesController.getGuide);
+router.route('/').post(validateBody(schemas.createGuideSchema), guidesController.createGuide);
 
-router.route('/').post(passportJWT, validateBody(schemas.createGuideSchema), guidesController.createGuide);
+router.route('/:guideId').get(guidesController.getGuide);
+
 
 module.exports = router;
