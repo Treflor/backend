@@ -121,27 +121,9 @@ const journeySchema = new mongoose.Schema({
         type: String
     },
     user: {
-        birthday: {
-            type: Number
-        },
-        email: {
-            type: String
-        },
-        family_name: {
-            type: String
-        },
-        gender: {
-            type: String
-        },
-        given_name: {
-            type: String
-        },
-        id: {
-            type: String
-        },
-        photo: {
-            type: String
-        }
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+        required: true
     }
 });
 

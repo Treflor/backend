@@ -3,76 +3,48 @@ const bcrypt = require('bcryptjs');
 
 //scheme can be add more options also
 const userSchema = new mongoose.Schema({
-    methods: {
-        type: [String],
-        enum: ['google', 'local'],
-        required: true
+    googleId: {
+        type: String,
     },
-    google: {
-        id: {
-            type: String,
-        },
-        email: {
-            type: String,
-            lowercase: true,
-        },
-        family_name: {
-            type: String
-        },
-        given_name: {
-            type: String
-        },
-        photo: {
-            type: String
-        },
-        gender: {
-            type: String
-        },
-        birthday: {
-            type: Number
-        },
+    email: {
+        type: String,
+        lowercase: true,
+    },
+    password: {
+        type: String,
+        select: false
+    },
+    family_name: {
+        type: String
+    },
+    given_name: {
+        type: String
+    },
+    photo: {
+        type: String
+    },
+    gender: {
+        type: String
+    },
+    birthday: {
+        type: Number
     },
     local: {
-        email: {
-            type: String,
-            lowercase: true,
-        },
-        password: {
-            type: String,
-        },
-        family_name: {
-            type: String
-        },
-        given_name: {
-            type: String
-        },
-        photo: {
-            type: String
-        },
-        gender: {
-            type: String
-        },
-        birthday: {
-            type: Number
-        },
-    },
+        type: Boolean,
+        default: false
+    }
 });
 
 userSchema.pre('save', async function (next) {
     try {
-        if (!this.methods.includes('local')) {
-            next();
-        }
-
         const user = this;
-
-        if (!user.isModified('local.password')) {
+        if (!user.isModified('password')) {
             next();
         }
 
         const salt = await bcrypt.genSalt(10);
-        const passwordHash = await bcrypt.hash(this.local.password, salt);
-        this.local.password = passwordHash;
+        const passwordHash = await bcrypt.hash(this.password, salt);
+        this.password = passwordHash;
         next();
     } catch (error) {
         next(error);
@@ -81,7 +53,9 @@ userSchema.pre('save', async function (next) {
 
 userSchema.methods.isValidPassword = async function (newPassword) {
     try {
-        return await bcrypt.compare(newPassword, this.local.password);
+        return await User.findById(this._id).select('+password').exec().then(async user => {
+            return await bcrypt.compare(newPassword, user.password);
+        });
     } catch (error) {
         throw new Error(error);
     }

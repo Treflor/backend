@@ -2,7 +2,6 @@ const Journey = require('../models/journey');
 
 module.exports = {
     insertJourney: async (req, res) => {
-        console.log(req.body)
         return new Journey(req.body).save()
             .then(journey => {
                 return res.json({ success: true, id: journey.id });

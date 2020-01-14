@@ -39,39 +39,33 @@ passport.use('google',
         var profile = parsedToken.payload;
         try {
             //finding the already exist user
-            let existingUser = await User.findOne({ 'google.id': googleToken });
+            let existingUser = await User.findOne({ 'googleId': profile.sub });
             if (existingUser) {
                 return done(null, existingUser);
             }
 
-            // check for email in local
-            existingUser = await User.findOne({ "local.email": profile.email });
+            // check for email in locally signed up?
+            existingUser = await User.findOne({ "email": profile.email });
             if (existingUser) {
-                existingUser.methods.push('google');
-                existingUser.google = {
-                    id: googleToken,
-                    email: profile.email,
-                    given_name: profile.given_name,
-                    family_name: profile.family_name,
-                    photo: profile.picture,
-                    gender: "",
-                    birthday: 0,
-                }
+                existingUser.googleId = profile.sub;
+                existingUser.given_name = profile.given_name;
+                existingUser.family_name = profile.family_name;
+                existingUser.photo = profile.picture;
+                existingUser.gender = "";
+                existingUser.birthday = 0;
+
                 await existingUser.save();
                 return done(null, existingUser);
             }
 
             var newUser = new User({
-                methods: ['google'],
-                google: {
-                    id: googleToken,
-                    email: profile.email,
-                    given_name: profile.given_name,
-                    family_name: profile.family_name,
-                    photo: profile.picture,
-                    gender: "",
-                    birthday: 0,
-                }
+                googleId: googleToken,
+                email: profile.email,
+                given_name: profile.given_name,
+                family_name: profile.family_name,
+                photo: profile.picture,
+                gender: "",
+                birthday: 0,
             });
             await newUser.save();
             done(null, newUser);
