@@ -51,8 +51,6 @@ passport.use('google',
                 existingUser.given_name = profile.given_name;
                 existingUser.family_name = profile.family_name;
                 existingUser.photo = profile.picture;
-                existingUser.gender = "";
-                existingUser.birthday = 0;
 
                 await existingUser.save();
                 return done(null, existingUser);
@@ -64,8 +62,6 @@ passport.use('google',
                 given_name: profile.given_name,
                 family_name: profile.family_name,
                 photo: profile.picture,
-                gender: "",
-                birthday: 0,
             });
             await newUser.save();
             done(null, newUser);

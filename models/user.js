@@ -24,14 +24,20 @@ const userSchema = new mongoose.Schema({
         type: String
     },
     gender: {
-        type: String
+        type: String,
+        default: ""
     },
     birthday: {
-        type: Number
+        type: Number,
+        default: 0
     },
     local: {
         type: Boolean,
         default: false
+    },
+    privilege: {
+        type: Number,
+        default: 0
     }
 });
 

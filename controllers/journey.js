@@ -27,10 +27,33 @@ module.exports = {
     },
 
     getAllJourney: async (req, res, next) => {
+        if (req.user.privilege < 20) {
+            console.log("Unathorized reqeust: " + req.user.email);
+            return res.status(403).json({ status: false, err: 'you don\'t have permission to view' })
+        }
         return Journey.find().limit(req.query.limit).skip(req.skip).lean().populate('user').exec().then(journey => {
             return res.status(200).json(journey);
         });
     },
+
+
+    getAllPublishedJourney: async (req, res, next) => {
+        return Journey.find({ published: true }).limit(req.query.limit).skip(req.skip).lean().populate('user').exec().then(journey => {
+            return res.status(200).json(journey);
+        });
+    },
+
+
+    getAllUnpublishedJourney: async (req, res, next) => {
+        if (req.user.privilege < 20) {
+            console.log("Unathorized reqeust: " + req.user.email);
+            return res.status(403).json({ status: false, err: 'you don\'t have permission to view' })
+        }
+        return Journey.find({ published: false }).limit(req.query.limit).skip(req.skip).lean().populate('user').exec().then(journey => {
+            return res.status(200).json(journey);
+        });
+    },
+
 
     deleteJourney: async (req, res, next) => {
         if (req && req.params && req.params.journeyId) {
