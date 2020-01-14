@@ -14,6 +14,7 @@ module.exports = {
     getJourney: async (req, res) => {
         if (req && req.params && req.params.journeyId) {
             return Journey.findOne({ _id: req.params.journeyId })
+                .populate('user')
                 .exec().then(journey => {
                     if (!journey)
                         return res.status(404).json({ error: 'journey not found' });
@@ -26,7 +27,7 @@ module.exports = {
     },
 
     getAllJourney: async (req, res, next) => {
-        return Journey.find().limit(req.query.limit).skip(req.skip).lean().exec().then(journey => {
+        return Journey.find().limit(req.query.limit).skip(req.skip).lean().populate('user').exec().then(journey => {
             return res.status(200).json(journey);
         });
     },
