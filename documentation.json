@@ -1,43 +1,59 @@
 {
-    "openapi" : "3.0.0",
-    "servers" : [ {
-      "url" : "https://api-treflor.herokuapp.com"
-    } ],
-    "info" : {
-      "description" : "This is Rest APIs of treflor.",
-      "version" : "1.0.0",
-      "title" : "Treflor Endpoints",
-      "contact" : {
-        "email" : "mail@hirantha.xyz"
-      },
-      "license" : {
-        "name" : "Apache 2.0",
-        "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
-      }
+  "openapi" : "3.0.0",
+  "servers" : [ {
+    "url" : "https://api-treflor.herokuapp.com"
+  } ],
+  "info" : {
+    "description" : "This is Rest APIs of treflor.",
+    "version" : "1.0.0",
+    "title" : "Treflor Endpoints",
+    "contact" : {
+      "email" : "mail@hirantha.xyz"
     },
-    "tags" : [ {
-      "name" : "users",
-      "description" : "Endpoints that every users can call"
-    }, {
-      "name" : "admins",
-      "description" : "Endpoints that admins can call"
-    }, {
-      "name" : "moderators",
-      "description" : "Endpoints that moderators can call"
-    } ],
-    "paths" : {
-      "/oauth/google" : {
-        "post" : {
-          "tags" : [ "users" ],
-          "summary" : "Authenticate users with google",
-          "description" : "google Id-token authenticate with google and backend response with json web token",
-          "requestBody" : {
+    "license" : {
+      "name" : "Apache 2.0",
+      "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "tags" : [ {
+    "name" : "authentication",
+    "description" : "Endpoints for authentication management"
+  }, {
+    "name" : "users",
+    "description" : "Endpoints for personal info management"
+  }, {
+    "name" : "journey",
+    "description" : "Endpoints for manage journeys"
+  } ],
+  "paths" : {
+    "/oauth/google" : {
+      "post" : {
+        "tags" : [ "authentication" ],
+        "summary" : "Authenticate users with google",
+        "description" : "google Id-token authenticate with google and backend response with json web token",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "object",
+                "properties" : {
+                  "id_token" : {
+                    "type" : "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "user authenticated",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "type" : "object",
                   "properties" : {
-                    "id_token" : {
+                    "token" : {
                       "type" : "string"
                     }
                   }
@@ -45,291 +61,490 @@
               }
             }
           },
-          "responses" : {
-            "200" : {
-              "description" : "user authenticated",
-              "content" : {
-                "application/json" : {
-                  "schema" : {
-                    "type" : "object",
-                    "properties" : {
-                      "token" : {
-                        "type" : "string"
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "403" : {
-              "description" : "invalid id_token"
-            }
+          "401" : {
+            "description" : "invalid id_token"
           }
         }
-      },
-      "/oauth/signup" : {
-        "post" : {
-          "tags" : [ "users" ],
-          "summary" : "Authenticate users with local signup",
-          "description" : "local sign up",
-          "requestBody" : {
+      }
+    },
+    "/oauth/signup" : {
+      "post" : {
+        "tags" : [ "authentication" ],
+        "summary" : "Authenticate users with local signup",
+        "description" : "local sign up",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/User"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "user authenticated",
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "$ref" : "#/components/schemas/User"
+                  "type" : "object",
+                  "properties" : {
+                    "token" : {
+                      "type" : "string"
+                    }
                   }
                 }
               }
             }
           },
-          "responses" : {
-            "200" : {
-              "description" : "user authenticated",
-              "content" : {
-                "application/json" : {
-                  "schema" : {
-                    "type" : "object",
-                    "properties" : {
-                      "token" : {
-                        "type" : "string"
-                      }
+          "403" : {
+            "description" : "Email already in use"
+          },
+          "400" : {
+            "description" : "Bad request"
+          },
+          "500" : {
+            "description" : "failed to upload profile pic"
+          }
+        }
+      }
+    },
+    "/oauth/signin" : {
+      "post" : {
+        "tags" : [ "authentication" ],
+        "summary" : "Authenticate users with local signup",
+        "description" : "local sign up",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "object",
+                "properties" : {
+                  "email" : {
+                    "type" : "string"
+                  },
+                  "password" : {
+                    "type" : "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "user authenticated",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "token" : {
+                      "type" : "string"
                     }
                   }
                 }
               }
-            },
-            "403" : {
-              "description" : "Email already in use"
-            },
-            "400" : {
-              "description" : "Bad request"
-            },
-            "500" : {
-              "description" : "failed to upload profile pic"
             }
+          },
+          "400" : {
+            "description" : "bad request"
+          },
+          "401" : {
+            "description" : "unauthenticated"
           }
         }
-      },
-      "/oauth/signin" : {
-        "post" : {
-          "tags" : [ "users" ],
-          "summary" : "Authenticate users with local signup",
-          "description" : "local sign up",
-          "requestBody" : {
+      }
+    },
+    "/user" : {
+      "get" : {
+        "tags" : [ "users" ],
+        "summary" : "current user",
+        "description" : "returns current user",
+        "parameters" : [ {
+          "in" : "header",
+          "name" : "Authorization",
+          "schema" : {
+            "type" : "string",
+            "format" : "jwt"
+          },
+          "required" : true
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "current user",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "type" : "object",
                   "properties" : {
                     "email" : {
-                      "type" : "string"
+                      "type" : "string",
+                      "example" : "mail@hirantha.xyz"
                     },
-                    "password" : {
-                      "type" : "string"
+                    "family_name" : {
+                      "type" : "string",
+                      "example" : "name1"
+                    },
+                    "given_name" : {
+                      "type" : "string",
+                      "example" : "name2"
+                    },
+                    "photo" : {
+                      "type" : "string",
+                      "format" : "base64",
+                      "example" : "base64img"
+                    },
+                    "gender" : {
+                      "type" : "string",
+                      "example" : "male",
+                      "enum" : [ "male", "female" ]
+                    },
+                    "birthday" : {
+                      "type" : "integer",
+                      "example" : 0
+                    },
+                    "privilege" : {
+                      "type" : "integer",
+                      "example" : 10
                     }
                   }
                 }
               }
             }
           },
-          "responses" : {
-            "200" : {
-              "description" : "user authenticated",
-              "content" : {
-                "application/json" : {
-                  "schema" : {
-                    "type" : "object",
+          "401" : {
+            "description" : "unauthenticated"
+          }
+        }
+      }
+    },
+    "/user/all" : {
+      "get" : {
+        "tags" : [ "users" ],
+        "summary" : "all users",
+        "description" : "returns all users in every privilege",
+        "parameters" : [ {
+          "in" : "header",
+          "name" : "Authorization",
+          "schema" : {
+            "type" : "string",
+            "format" : "jwt"
+          },
+          "required" : true
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "all users",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
                     "properties" : {
-                      "token" : {
-                        "type" : "string"
+                      "email" : {
+                        "type" : "string",
+                        "example" : "mail@hirantha.xyz"
+                      },
+                      "family_name" : {
+                        "type" : "string",
+                        "example" : "name1"
+                      },
+                      "given_name" : {
+                        "type" : "string",
+                        "example" : "name2"
+                      },
+                      "photo" : {
+                        "type" : "string",
+                        "format" : "base64",
+                        "example" : "base64img"
+                      },
+                      "gender" : {
+                        "type" : "string",
+                        "example" : "male",
+                        "enum" : [ "male", "female" ]
+                      },
+                      "birthday" : {
+                        "type" : "integer",
+                        "example" : 0
+                      },
+                      "privilege" : {
+                        "type" : "integer",
+                        "example" : 10
                       }
                     }
                   }
                 }
               }
-            },
-            "400" : {
-              "description" : "bad request"
-            },
-            "403" : {
-              "description" : "unauthenticated"
-            }
-          }
-        }
-      },
-      "/inventory" : {
-        "get" : {
-          "tags" : [ "developers" ],
-          "summary" : "searches inventory",
-          "operationId" : "searchInventory",
-          "description" : "By passing in the appropriate options, you can search for\navailable inventory in the system\n",
-          "parameters" : [ {
-            "in" : "query",
-            "name" : "searchString",
-            "description" : "pass an optional search string for looking up inventory",
-            "required" : false,
-            "schema" : {
-              "type" : "string"
-            }
-          }, {
-            "in" : "query",
-            "name" : "skip",
-            "description" : "number of records to skip for pagination",
-            "schema" : {
-              "type" : "integer",
-              "format" : "int32",
-              "minimum" : 0
-            }
-          }, {
-            "in" : "query",
-            "name" : "limit",
-            "description" : "maximum number of records to return",
-            "schema" : {
-              "type" : "integer",
-              "format" : "int32",
-              "minimum" : 0,
-              "maximum" : 50
-            }
-          } ],
-          "responses" : {
-            "200" : {
-              "description" : "search results matching criteria",
-              "content" : {
-                "application/json" : {
-                  "schema" : {
-                    "type" : "array",
-                    "items" : {
-                      "$ref" : "#/components/schemas/InventoryItem"
-                    }
-                  }
-                }
-              }
-            },
-            "400" : {
-              "description" : "bad input parameter"
-            }
-          }
-        },
-        "post" : {
-          "tags" : [ "admins" ],
-          "summary" : "adds an inventory item",
-          "operationId" : "addInventory",
-          "description" : "Adds an item to the system",
-          "responses" : {
-            "201" : {
-              "description" : "item created"
-            },
-            "400" : {
-              "description" : "invalid input, object invalid"
-            },
-            "409" : {
-              "description" : "an existing item already exists"
             }
           },
-          "requestBody" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "type" : "object",
-                  "properties" : {
-                    "id_token" : {
-                      "type" : "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description" : "id token recieved by google"
+          "401" : {
+            "description" : "unauthenticated"
+          },
+          "403" : {
+            "description" : "cannot access because privilege level not match"
           }
         }
       }
     },
-    "components" : {
-      "schemas" : {
-        "InventoryItem" : {
-          "type" : "object",
-          "required" : [ "id", "name", "manufacturer", "releaseDate" ],
-          "properties" : {
-            "id" : {
-              "type" : "string",
-              "format" : "uuid",
-              "example" : "d290f1ee-6c54-4b01-90e6-d701748f0851"
-            },
-            "name" : {
-              "type" : "string",
-              "example" : "Widget Adapter"
-            },
-            "releaseDate" : {
-              "type" : "string",
-              "format" : "date-time",
-              "example" : "2016-08-29T09:12:33.001Z"
-            },
-            "manufacturer" : {
-              "$ref" : "#/components/schemas/Manufacturer"
-            }
-          }
-        },
-        "Manufacturer" : {
-          "required" : [ "name" ],
-          "properties" : {
-            "name" : {
-              "type" : "string",
-              "example" : "ACME Corporation"
-            },
-            "homePage" : {
-              "type" : "string",
-              "format" : "url",
-              "example" : "https://www.acme-corp.com"
-            },
-            "phone" : {
-              "type" : "string",
-              "example" : "408-867-5309"
+    "/user/authorized" : {
+      "get" : {
+        "tags" : [ "users" ],
+        "summary" : "all authorized users",
+        "description" : "returns all authorized users",
+        "parameters" : [ {
+          "in" : "header",
+          "name" : "Authorization",
+          "schema" : {
+            "type" : "string",
+            "format" : "jwt"
+          },
+          "required" : true
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "all users",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "properties" : {
+                      "email" : {
+                        "type" : "string",
+                        "example" : "mail@hirantha.xyz"
+                      },
+                      "family_name" : {
+                        "type" : "string",
+                        "example" : "name1"
+                      },
+                      "given_name" : {
+                        "type" : "string",
+                        "example" : "name2"
+                      },
+                      "photo" : {
+                        "type" : "string",
+                        "format" : "base64",
+                        "example" : "base64img"
+                      },
+                      "gender" : {
+                        "type" : "string",
+                        "example" : "male",
+                        "enum" : [ "male", "female" ]
+                      },
+                      "birthday" : {
+                        "type" : "integer",
+                        "example" : 0
+                      },
+                      "privilege" : {
+                        "type" : "integer",
+                        "example" : 10
+                      }
+                    }
+                  }
+                }
+              }
             }
           },
-          "type" : "object"
-        },
-        "User" : {
-          "type" : "object",
-          "required" : [ "email", "password", "password2", "family_name", "given_name", "photo", "gender", "birthday" ],
-          "properties" : {
-            "email" : {
-              "type" : "string",
-              "example" : "mail@hirantha.xyz"
-            },
-            "password" : {
-              "type" : "string",
-              "example" : "1234"
-            },
-            "password2" : {
-              "type" : "string",
-              "example" : "1234"
-            },
-            "family_name" : {
-              "type" : "string",
-              "example" : "name1"
-            },
-            "given_name" : {
-              "type" : "string",
-              "example" : "name2"
-            },
-            "photo" : {
-              "type" : "string",
-              "format" : "base64",
-              "example" : "base64img"
-            },
-            "gender" : {
-              "type" : "string",
-              "example" : "male",
-              "enum" : [ "male", "female" ]
-            },
-            "birthday" : {
-              "type" : "integer",
-              "example" : 0
+          "401" : {
+            "description" : "unauthenticated"
+          },
+          "403" : {
+            "description" : "cannot access because privilege level not match"
+          }
+        }
+      }
+    },
+    "/user/unauthorized" : {
+      "get" : {
+        "tags" : [ "users" ],
+        "summary" : "all unauthorized users",
+        "description" : "returns all unauthorized users",
+        "parameters" : [ {
+          "in" : "header",
+          "name" : "Authorization",
+          "schema" : {
+            "type" : "string",
+            "format" : "jwt"
+          },
+          "required" : true
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "all users",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "properties" : {
+                      "email" : {
+                        "type" : "string",
+                        "example" : "mail@hirantha.xyz"
+                      },
+                      "family_name" : {
+                        "type" : "string",
+                        "example" : "name1"
+                      },
+                      "given_name" : {
+                        "type" : "string",
+                        "example" : "name2"
+                      },
+                      "photo" : {
+                        "type" : "string",
+                        "format" : "base64",
+                        "example" : "base64img"
+                      },
+                      "gender" : {
+                        "type" : "string",
+                        "example" : "male",
+                        "enum" : [ "male", "female" ]
+                      },
+                      "birthday" : {
+                        "type" : "integer",
+                        "example" : 0
+                      },
+                      "privilege" : {
+                        "type" : "integer",
+                        "example" : 0
+                      }
+                    }
+                  }
+                }
+              }
             }
+          },
+          "401" : {
+            "description" : "unauthenticated"
+          },
+          "403" : {
+            "description" : "cannot access because privilege level not match"
+          }
+        }
+      }
+    },
+    "/user/authorize/{userId}" : {
+      "get" : {
+        "tags" : [ "users" ],
+        "summary" : "all authorized users",
+        "description" : "returns all authorized users",
+        "parameters" : [ {
+          "in" : "header",
+          "name" : "Authorization",
+          "schema" : {
+            "type" : "string",
+            "format" : "jwt"
+          },
+          "required" : true
+        }, {
+          "in" : "path",
+          "name" : "userId",
+          "schema" : {
+            "type" : "string"
+          },
+          "required" : true
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "all users",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "properties" : {
+                      "email" : {
+                        "type" : "string",
+                        "example" : "mail@hirantha.xyz"
+                      },
+                      "family_name" : {
+                        "type" : "string",
+                        "example" : "name1"
+                      },
+                      "given_name" : {
+                        "type" : "string",
+                        "example" : "name2"
+                      },
+                      "photo" : {
+                        "type" : "string",
+                        "format" : "base64",
+                        "example" : "base64img"
+                      },
+                      "gender" : {
+                        "type" : "string",
+                        "example" : "male",
+                        "enum" : [ "male", "female" ]
+                      },
+                      "birthday" : {
+                        "type" : "integer",
+                        "example" : 0
+                      },
+                      "privilege" : {
+                        "type" : "integer",
+                        "example" : 10
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthenticated"
+          },
+          "403" : {
+            "description" : "cannot access because privilege level not match"
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "User" : {
+        "type" : "object",
+        "required" : [ "email", "password", "password2", "family_name", "given_name", "photo", "gender", "birthday" ],
+        "properties" : {
+          "email" : {
+            "type" : "string",
+            "example" : "mail@hirantha.xyz"
+          },
+          "password" : {
+            "type" : "string",
+            "example" : "1234"
+          },
+          "password2" : {
+            "type" : "string",
+            "example" : "1234"
+          },
+          "family_name" : {
+            "type" : "string",
+            "example" : "name1"
+          },
+          "given_name" : {
+            "type" : "string",
+            "example" : "name2"
+          },
+          "photo" : {
+            "type" : "string",
+            "format" : "base64",
+            "example" : "base64img"
+          },
+          "gender" : {
+            "type" : "string",
+            "example" : "male",
+            "enum" : [ "male", "female" ]
+          },
+          "birthday" : {
+            "type" : "integer",
+            "example" : 0
+          },
+          "privilege" : {
+            "type" : "integer",
+            "example" : 10
           }
         }
       }
     }
   }
+}
