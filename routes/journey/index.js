@@ -11,5 +11,6 @@ router.route('/').get(journeyController.getAllPublishedJourney);
 router.route('/all').get(journeyController.getAllJourney);
 router.route('/unpublished').get(journeyController.getAllUnpublishedJourney);
 router.route('/:journeyId').get(journeyController.getJourney);
+router.route('/publish/:journeyId').post(journeyController.publishJourney);
 
 module.exports = router;

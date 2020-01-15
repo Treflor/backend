@@ -31,8 +31,8 @@ module.exports = {
             console.log("Unathorized reqeust: " + req.user.email);
             return res.status(403).json({ status: false, err: 'you don\'t have permission to view' })
         }
-        return Journey.find().limit(req.query.limit).skip(req.skip).lean().populate('user').exec().then(journey => {
-            return res.status(200).json(journey);
+        return Journey.find().limit(req.query.limit).skip(req.skip).lean().populate('user').exec().then(journeys => {
+            return res.status(200).json(journeys);
         });
     },
 
@@ -42,7 +42,6 @@ module.exports = {
             return res.status(200).json(journey);
         });
     },
-
 
     getAllUnpublishedJourney: async (req, res, next) => {
         if (req.user.privilege < 20) {
@@ -54,13 +53,38 @@ module.exports = {
         });
     },
 
+    publishJourney: async (req, res, next) => {
+        if (req.user.privilege < 20) {
+            console.log("Unathorized reqeust: " + req.user.email);
+            return res.status(403).json({ status: false, err: 'you don\'t have permission to view' })
+        }
+        if (req && req.params && req.params.journeyId) {
+            return Journey.findOne({ _id: req.params.journeyId })
+                .exec().then(journey => {
+                    if (!journey)
+                        return res.status(404).json({ error: 'journey not found' });
+
+                    journey.published = true;
+                    journey.save().then(() => {
+                        return res.status(200).json(journey);
+                    });
+                });
+        } else {
+            return res.status(400).json({ error: 'journey id not found' });
+        }
+    },
 
     deleteJourney: async (req, res, next) => {
         if (req && req.params && req.params.journeyId) {
-            Journey.deleteOne({ _id: req.params.journeyId }).exec().then(journey => {
+            Journey.findOne({ _id: req.params.journeyId }).exec().then(journey => {
                 if (!journey)
                     return res.status(400).json({ error: "journey not found!" });
-                return res.status(200).json({ success: true });
+                if (journey.id != req.user._id || req.user.privilege < 20) {
+                    return req.status(403).json({ err: "you are not allowed to delete!" })
+                }
+                journey.delete().then(() => {
+                    return res.status(200).json({ success: true });
+                })
             });
         } else {
             return res.status(400).json({ error: 'journey id not found' });
