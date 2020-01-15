@@ -17,7 +17,7 @@ router.use('/oauth', oauth);
 router.use('/user', passportJWT, user);
 router.use('/services', passportJWT, services);
 router.use('/guides', passportJWT, guides);
-router.use('/journey', passportJWT, journey);
+router.use('/journey', journey);
 
 /* GET home page. */
 router.get('/', function (req, res, next) {

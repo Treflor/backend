@@ -2,12 +2,15 @@ const Journey = require('../models/journey');
 
 module.exports = {
     insertJourney: async (req, res) => {
-        return new Journey(req.body).save()
+        var journey = req.body;
+        journey.user = req.user.id;
+        return new Journey(journey).save()
             .then(journey => {
                 return res.json({ success: true, id: journey.id });
             })
             .catch(e => {
-                return res.json({ error: e, success: false });
+                console.log(e)
+                return res.status(400).json({ error: e, success: false });
             })
     },
 

@@ -128,6 +128,19 @@ const journeySchema = new mongoose.Schema({
     published: {
         type: Boolean,
         default: false
+    },
+    ratings: [
+        {
+            user: {
+                type: String
+            },
+            rate: {
+                type: Number
+            }
+        }
+    ],
+    favorite: {
+        type: [String]
     }
 });
 
