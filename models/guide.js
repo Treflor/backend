@@ -12,6 +12,10 @@ const guideSchema = new mongoose.Schema({
     },
     img: {
         type: String,
+    },
+    published: {
+        type: Boolean,
+        default: false
     }
 });
 

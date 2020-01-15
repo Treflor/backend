@@ -22,6 +22,9 @@
     "name" : "users",
     "description" : "Endpoints for personal info management"
   }, {
+    "name" : "services",
+    "description" : "Endpoints for external services"
+  }, {
     "name" : "journey",
     "description" : "Endpoints for manage journeys"
   } ],
@@ -424,7 +427,7 @@
       }
     },
     "/user/authorize/{userId}" : {
-      "get" : {
+      "post" : {
         "tags" : [ "users" ],
         "summary" : "all authorized users",
         "description" : "returns all authorized users",
@@ -497,6 +500,130 @@
           }
         }
       }
+    },
+    "/user/edit" : {
+      "post" : {
+        "tags" : [ "users" ],
+        "summary" : "update user object",
+        "description" : "update user's details",
+        "parameters" : [ {
+          "in" : "header",
+          "name" : "Authorization",
+          "schema" : {
+            "type" : "string",
+            "format" : "jwt"
+          },
+          "required" : true
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "array",
+                "items" : {
+                  "properties" : {
+                    "email" : {
+                      "type" : "string",
+                      "example" : "mail@hirantha.xyz"
+                    },
+                    "family_name" : {
+                      "type" : "string",
+                      "example" : "name1"
+                    },
+                    "given_name" : {
+                      "type" : "string",
+                      "example" : "name2"
+                    },
+                    "photo" : {
+                      "type" : "string",
+                      "format" : "base64",
+                      "example" : "base64img"
+                    },
+                    "gender" : {
+                      "type" : "string",
+                      "example" : "male",
+                      "enum" : [ "male", "female" ]
+                    },
+                    "birthday" : {
+                      "type" : "integer",
+                      "example" : 0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "success"
+          },
+          "401" : {
+            "description" : "unauthenticated"
+          },
+          "403" : {
+            "description" : "cannot access because privilege level not match"
+          }
+        }
+      }
+    },
+    "/servies/google/direction" : {
+      "get" : {
+        "summary" : "directions for 2 locations",
+        "description" : "directions from google and treflor data",
+        "tags" : [ "services" ],
+        "parameters" : [ {
+          "in" : "header",
+          "name" : "Authorization",
+          "schema" : {
+            "type" : "string",
+            "format" : "jwt"
+          },
+          "required" : true
+        }, {
+          "in" : "query",
+          "name" : "origin",
+          "schema" : {
+            "type" : "string",
+            "example" : "7.888+4.434 or Kandy"
+          },
+          "required" : true
+        }, {
+          "in" : "query",
+          "name" : "destination",
+          "schema" : {
+            "type" : "string",
+            "example" : "7.888+4.434 or kurunegala"
+          },
+          "required" : true
+        }, {
+          "in" : "query",
+          "name" : "mode",
+          "schema" : {
+            "type" : "string",
+            "example" : "driving",
+            "enum" : [ "driving", "walking", "bicycling", "transit" ]
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "success",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Direction"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthenticated"
+          },
+          "403" : {
+            "description" : "cannot access because privilege level not match"
+          }
+        }
+      }
     }
   },
   "components" : {
@@ -542,6 +669,232 @@
           "privilege" : {
             "type" : "integer",
             "example" : 10
+          }
+        }
+      },
+      "Direction" : {
+        "type" : "object",
+        "properties" : {
+          "bounds" : {
+            "type" : "object",
+            "properties" : {
+              "northeast" : {
+                "type" : "object",
+                "properties" : {
+                  "lat" : {
+                    "type" : "number",
+                    "example" : 7.888
+                  },
+                  "lng" : {
+                    "type" : "number",
+                    "example" : 7.888
+                  }
+                }
+              },
+              "southwest" : {
+                "type" : "object",
+                "properties" : {
+                  "lat" : {
+                    "type" : "number",
+                    "example" : 7.888
+                  },
+                  "lng" : {
+                    "type" : "number",
+                    "example" : 7.888
+                  }
+                }
+              }
+            }
+          },
+          "distance" : {
+            "type" : "object",
+            "properties" : {
+              "text" : {
+                "type" : "string",
+                "example" : "2.1 km"
+              },
+              "value" : {
+                "type" : "number",
+                "example" : 2100
+              }
+            }
+          },
+          "duration" : {
+            "type" : "object",
+            "properties" : {
+              "text" : {
+                "type" : "string",
+                "example" : "1 hour"
+              },
+              "value" : {
+                "type" : "number",
+                "example" : 3610
+              }
+            }
+          },
+          "end_address" : {
+            "type" : "string",
+            "example" : "Kurunegala"
+          },
+          "end_location" : {
+            "type" : "object",
+            "properties" : {
+              "lat" : {
+                "type" : "number",
+                "example" : 7.888
+              },
+              "lng" : {
+                "type" : "number",
+                "example" : 7.888
+              }
+            }
+          },
+          "points" : {
+            "type" : "string",
+            "example" : "l@smliNSVqAiB{@eAgBkBkCkCkBmByB{ByC{CQGa@]MCEI?EBG"
+          },
+          "start_address" : {
+            "type" : "string",
+            "example" : "Kandy"
+          },
+          "start_location" : {
+            "type" : "object",
+            "properties" : {
+              "lat" : {
+                "type" : "number",
+                "example" : 7.888
+              },
+              "lng" : {
+                "type" : "number",
+                "example" : 7.888
+              }
+            }
+          },
+          "status" : {
+            "type" : "string",
+            "example" : "OK"
+          }
+        }
+      },
+      "Journey" : {
+        "type" : "object",
+        "properties" : {
+          "direction" : {
+            "$ref" : "#/components/schemas/Direction"
+          },
+          "journey" : {
+            "type" : "object",
+            "properties" : {
+              "content" : {
+                "type" : "string",
+                "example" : "bla bla"
+              },
+              "destination" : {
+                "type" : "object",
+                "properties" : {
+                  "address" : {
+                    "type" : "string",
+                    "example" : "kandy"
+                  },
+                  "id" : {
+                    "type" : "string",
+                    "example" : 112324343249348320
+                  },
+                  "lat" : {
+                    "type" : "number",
+                    "example" : 7.888
+                  },
+                  "lng" : {
+                    "type" : "number",
+                    "example" : 7.888
+                  },
+                  "name" : {
+                    "type" : "string",
+                    "example" : "kandy"
+                  }
+                }
+              },
+              "id" : {
+                "type" : "string",
+                "example" : 213124339240
+              },
+              "origin" : {
+                "type" : "object",
+                "properties" : {
+                  "address" : {
+                    "type" : "string",
+                    "example" : "kurunegala"
+                  },
+                  "id" : {
+                    "type" : "string",
+                    "example" : 112324343249348320
+                  },
+                  "lat" : {
+                    "type" : "number",
+                    "example" : 7.888
+                  },
+                  "lng" : {
+                    "type" : "number",
+                    "example" : 7.888
+                  },
+                  "name" : {
+                    "type" : "string",
+                    "example" : "kurunegala"
+                  }
+                }
+              },
+              "title" : {
+                "type" : "string",
+                "example" : "my ride"
+              },
+              "level" : {
+                "type" : "string",
+                "example" : "hard",
+                "enum" : [ "easy", "medium", "hard" ]
+              },
+              "labels" : {
+                "type" : "array",
+                "items" : {
+                  "type" : "string",
+                  "example" : [ "hiking", "friends" ]
+                }
+              }
+            }
+          },
+          "tracked_locations" : {
+            "type" : "string",
+            "example" : "lsdfkldjfdopjvdonvnsdlfsndflnsldf"
+          },
+          "user" : {
+            "type" : "string",
+            "example" : 123133323
+          },
+          "published" : {
+            "type" : "boolean",
+            "example" : false,
+            "default" : false
+          }
+        }
+      },
+      "Guide" : {
+        "type" : "object",
+        "properties" : {
+          "title" : {
+            "type" : "string"
+          },
+          "guide" : {
+            "type" : "string"
+          },
+          "date" : {
+            "type" : "number"
+          },
+          "img" : {
+            "type" : "string",
+            "format" : "base64"
+          },
+          "published" : {
+            "type" : "boolean",
+            "default" : false
           }
         }
       }
