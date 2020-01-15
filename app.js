@@ -9,6 +9,8 @@ const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const multer = require('multer');
 const fileUpload = require('express-fileupload');
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./documentation.json');
 
 var app = express();
 dotenv.config();
@@ -37,6 +39,7 @@ app.use(fileUpload());
 
 var indexRouter = require('./routes/index');
 app.use('/', indexRouter);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
