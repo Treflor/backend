@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 
 const journeySchema = new mongoose.Schema({
-
     direction: {
         bounds: {
             northeast: {
@@ -139,7 +138,7 @@ const journeySchema = new mongoose.Schema({
             }
         }
     ],
-    favorite: {
+    favorites: {
         type: [String]
     }
 });

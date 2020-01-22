@@ -1,4 +1,5 @@
 const Journey = require('../models/journey');
+const User = require('../models/user');
 
 module.exports = {
     insertJourney: async (req, res) => {
@@ -89,6 +90,58 @@ module.exports = {
                     return res.status(200).json({ success: true });
                 })
             });
+        } else {
+            return res.status(400).json({ error: 'journey id not found' });
+        }
+    },
+
+    addFavoriteJourney: async (req, res, next) => {
+        if (req && req.params && req.params.journeyId) {
+            return Journey.findOne({ _id: req.params.journeyId })
+                .exec().then(journey => {
+                    if (!journey)
+                        return res.status(404).json({ error: 'journey not found' });
+                    if (journey.favorites.indexOf(req.user.id) === -1) journey.favorites.push(req.user.id);
+                    journey.save().then(_ => {
+                        res.status(200).json({ success: true, msg: "added to favorite" });
+                    }).catch(_ => {
+                        res.status(500).json({ success: false, msg: "fail on adding!" });
+                    });
+
+                    User.findOne({ _id: req.user.id }).exec().then(user => {
+                        if (user) {
+                            if (user.favorites.indexOf(req.params.journeyId) === -1) user.favorites.push(req.params.journeyId);
+                            user.save()
+                        }
+                    })
+                });
+        } else {
+            return res.status(400).json({ error: 'journey id not found' });
+        }
+    },
+
+    removeFavoriteJourney: async (req, res, next) => {
+        if (req && req.params && req.params.journeyId) {
+            return Journey.findOne({ _id: req.params.journeyId })
+                .exec().then(journey => {
+                    if (!journey)
+                        return res.status(404).json({ error: 'journey not found' });
+                    if (journey.favorites.indexOf(req.user.id) !== -1)
+                        journey.favorites = journey.favorites.filter(id => id !== req.user.id);
+                    journey.save().then(_ => {
+                        res.status(200).json({ success: true, msg: "removed from favorite" });
+                    }).catch(_ => {
+                        res.status(500).json({ success: false, msg: "fail on removing!" });
+                    });
+
+                    User.findOne({ _id: req.user.id }).exec().then(user => {
+                        if (user) {
+                            if (user.favorites.indexOf(req.params.journeyId) !== -1)
+                                user.favorites = user.favorites.filter(id => id !== req.params.journeyId);
+                            user.save()
+                        }
+                    })
+                });
         } else {
             return res.status(400).json({ error: 'journey id not found' });
         }

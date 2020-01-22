@@ -38,6 +38,9 @@ const userSchema = new mongoose.Schema({
     privilege: {
         type: Number,
         default: 0
+    },
+    favorites: {
+        type: [String]
     }
 });
 

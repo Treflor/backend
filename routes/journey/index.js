@@ -14,5 +14,7 @@ router.route('/all').get(passportJWT, journeyController.getAllJourney);
 router.route('/unpublished').get(passportJWT, journeyController.getAllUnpublishedJourney);
 router.route('/:journeyId').get(passportJWT, journeyController.getJourney);
 router.route('/publish/:journeyId').post(passportJWT, journeyController.publishJourney);
+router.route('/:journeyId/addFavorite').put(passportJWT, journeyController.addFavoriteJourney);
+router.route('/:journeyId/removeFavorite').put(passportJWT, journeyController.removeFavoriteJourney);
 
 module.exports = router;
