@@ -10,6 +10,7 @@ const user = require('./user');
 const services = require('./services');
 const guides = require('./guides')
 const journey = require('./journey');
+const images = require('./images');
 
 const passportJWT = passport.authenticate('jwt', { session: false });
 
@@ -18,6 +19,7 @@ router.use('/user', passportJWT, user);
 router.use('/services', passportJWT, services);
 router.use('/guides', passportJWT, guides);
 router.use('/journey', journey);
+router.use('/images', images);
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
