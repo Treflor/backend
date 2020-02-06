@@ -3,6 +3,7 @@ const User = require('../models/user');
 
 module.exports = {
     insertJourney: async (req, res) => {
+        console.log(req.body);
         var journey = req.body;
         journey.user = req.user.id;
         return new Journey(journey).save()

@@ -12,6 +12,8 @@ router.route('/unauthorized').get(userController.unauthorizedUsers);
 
 router.route('/authorized').get(userController.authorizedUsers);
 
+router.route('/journeys').get(userController.userJourneys);
+
 router.route('/authorize/:userId').post(userController.authorizeUser);
 
 router.route('/edit').post(validateBody(schemas.updateUserSchema), userController.editUser);

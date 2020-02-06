@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const Journey = require('../models/journey');
 
 module.exports = {
     currentUser: async (req, res, next) => {
@@ -10,6 +11,10 @@ module.exports = {
             return res.status(403).json({ success: false, err: "you don't have permissions" })
         }
         return User.find().lean().exec().then(users => res.send(users));
+    },
+
+    userJourneys: async (req, res, next) => {
+        return Journey.find({user:req.user.id}).lean().exec().then(journeys => res.send(journeys));
     },
 
     editUser: async (req, res, next) => {
