@@ -1,25 +1,52 @@
 const Journey = require('../models/journey');
 const User = require('../models/user');
+const Landmark = require('../models/landmark');
+const shortId = require('shortid');
+
+storeImage = async (photo, filename, cb) => {
+    storage.storeFile(Buffer.from(photo, "base64"), 'gallery', filename, cb);
+}
 
 module.exports = {
     insertJourney: async (req, res) => {
-        console.log(req.body);
         var journey = req.body;
         journey.user = req.user.id;
-        return new Journey(journey).save()
-            .then(journey => {
-                return res.json({ success: true, id: journey.id });
-            })
-            .catch(e => {
-                console.log(e)
-                return res.status(400).json({ error: e, success: false });
-            })
+        var journeyObj = new Journey(journey);
+        journeyObj.landmarks = [];
+        var dbres = await journeyObj.save();
+        if (dbres != null) {
+            res.json({ success: true, id: journey.id });
+        } else {
+            console.log(e)
+            res.status(400).json({ error: e, success: false });
+        }
+
+        if (journey.landmarks != null) {
+            journeyObj.landmarks = [];
+            journey.landmarks.forEach(function (landmark) {
+                var landmarkObj = new Landmark(landmark);
+                landmarkObj.images = [];
+                if (landmark.images != null) {
+                    landmark.images.forEach(function (image) {
+                        storeImage(image, shortId(), (err, url) => {
+                            landmarkObj.images.push(url);
+                        });
+                    });
+                }
+                landmarkObj.user = req.user.id;
+                landmarkObj.journey = journeyObj.id;
+                landmarkObj.save();
+                journeyObj.landmarks.push(landmarkObj.id);
+            });
+            journeyObj.save();
+        }
     },
 
     getJourney: async (req, res) => {
         if (req && req.params && req.params.journeyId) {
             return Journey.findOne({ _id: req.params.journeyId })
                 .populate('user')
+                .populate({path:'landmarks',model:'landmark'})
                 .exec().then(journey => {
                     if (!journey)
                         return res.status(404).json({ error: 'journey not found' });

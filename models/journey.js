@@ -124,6 +124,12 @@ const journeySchema = new mongoose.Schema({
         ref: 'user',
         required: true
     },
+    landmarks: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'landmark',
+        }
+    ],
     published: {
         type: Boolean,
         default: false
