@@ -2,6 +2,7 @@ const Journey = require('../models/journey');
 const User = require('../models/user');
 const Landmark = require('../models/landmark');
 const shortId = require('shortid');
+const storage = require('../services/cloud-storage');
 
 storeImage = async (photo, filename, cb) => {
     storage.storeFile(Buffer.from(photo, "base64"), 'landmarks', filename, cb);
@@ -36,7 +37,7 @@ module.exports = {
                 if (landmark.images != null) {
                     landmark.images.forEach(function (image) {
                         storeImage(image, shortId(), (err, url) => {
-                            Landmark.findOneAndUpdate({ _id: landmarkObj.id }, { $push: { images: url } });
+                            Landmark.findOneAndUpdate({ _id: landmarkObj.id }, { $push: { images: url } }).exec();
                         });
                     });
                 }
