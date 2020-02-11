@@ -21,7 +21,7 @@ const gallerySchema = new mongoose.Schema({
     },
     published: {
         type: Boolean,
-        default: false
+        default: true
     },
     user: {
         type: mongoose.Schema.Types.ObjectId,
