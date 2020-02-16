@@ -4,7 +4,7 @@ const Landmark = require('../models/landmark');
 const shortId = require('shortid');
 
 storeImage = async (photo, filename, cb) => {
-    storage.storeFile(Buffer.from(photo, "base64"), 'gallery', filename, cb);
+    storage.storeFile(Buffer.from(photo, "base64"), 'landmarks', filename, cb);
 }
 
 module.exports = {
@@ -22,23 +22,26 @@ module.exports = {
         }
 
         if (journey.landmarks != null) {
-            journeyObj.landmarks = [];
-            journey.landmarks.forEach(function (landmark) {
+            journey.landmarks.forEach(async function (landmark) {
                 var landmarkObj = new Landmark(landmark);
+                journeyObj.landmarks = [];
+                landmarkObj.user = req.user.id;
+                landmarkObj.journey = journeyObj.id;
                 landmarkObj.images = [];
+                landmarkObj.save();
+
+                journeyObj.landmarks.push(landmarkObj.id);
+                journeyObj.save();
+
                 if (landmark.images != null) {
                     landmark.images.forEach(function (image) {
                         storeImage(image, shortId(), (err, url) => {
-                            landmarkObj.images.push(url);
+                            Landmark.findOneAndUpdate({ _id: landmarkObj.id }, { $push: { images: url } });
                         });
                     });
                 }
-                landmarkObj.user = req.user.id;
-                landmarkObj.journey = journeyObj.id;
-                landmarkObj.save();
-                journeyObj.landmarks.push(landmarkObj.id);
+
             });
-            journeyObj.save();
         }
     },
 
@@ -46,7 +49,7 @@ module.exports = {
         if (req && req.params && req.params.journeyId) {
             return Journey.findOne({ _id: req.params.journeyId })
                 .populate('user')
-                .populate({path:'landmarks',model:'landmark'})
+                .populate("landmarks")
                 .exec().then(journey => {
                     if (!journey)
                         return res.status(404).json({ error: 'journey not found' });
@@ -63,16 +66,22 @@ module.exports = {
             console.log("Unathorized reqeust: " + req.user.email);
             return res.status(403).json({ status: false, err: 'you don\'t have permission to view' })
         }
-        return Journey.find().limit(req.query.limit).skip(req.skip).lean().populate('user').exec().then(journeys => {
-            return res.status(200).json(journeys);
-        });
+        return Journey.find().limit(req.query.limit).skip(req.skip).lean()
+            .populate('user')
+            .populate("landmarks")
+            .exec().then(journeys => {
+                return res.status(200).json(journeys);
+            });
     },
 
 
     getAllPublishedJourney: async (req, res, next) => {
-        return Journey.find({ published: true }).limit(req.query.limit).skip(req.skip).lean().populate('user').exec().then(journey => {
-            return res.status(200).json(journey);
-        });
+        return Journey.find({ published: true }).limit(req.query.limit).skip(req.skip).lean()
+            .populate('user')
+            .populate('landmarks')
+            .exec().then(journey => {
+                return res.status(200).json(journey);
+            });
     },
 
     getAllUnpublishedJourney: async (req, res, next) => {
@@ -80,9 +89,12 @@ module.exports = {
             console.log("Unathorized reqeust: " + req.user.email);
             return res.status(403).json({ status: false, err: 'you don\'t have permission to view' })
         }
-        return Journey.find({ published: false }).limit(req.query.limit).skip(req.skip).lean().populate('user').exec().then(journey => {
-            return res.status(200).json(journey);
-        });
+        return Journey.find({ published: false }).limit(req.query.limit).skip(req.skip).lean()
+            .populate('user')
+            .populate('landmarks')
+            .exec().then(journey => {
+                return res.status(200).json(journey);
+            });
     },
 
     publishJourney: async (req, res, next) => {
