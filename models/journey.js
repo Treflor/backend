@@ -115,6 +115,9 @@ const journeySchema = new mongoose.Schema({
         labels: {
             type: [String]
         },
+        image: {
+            type: String
+        },
     },
     tracked_locations: {
         type: String
@@ -146,7 +149,10 @@ const journeySchema = new mongoose.Schema({
     ],
     favorites: {
         type: [String]
-    }
+    },
+    images: {
+        type: [String]
+    },
 });
 
 const journey = mongoose.model('journey', journeySchema);

@@ -5,7 +5,7 @@ const shortId = require('shortid');
 const storage = require('../services/cloud-storage');
 
 storeImage = async (photo, filename, cb) => {
-    storage.storeFile(Buffer.from(photo, "base64"), 'landmarks', filename, cb);
+    storage.storeFile(Buffer.from(photo, "base64"), "images", filename, cb);
 }
 
 module.exports = {
@@ -13,6 +13,8 @@ module.exports = {
         var journey = req.body;
         journey.user = req.user.id;
         var journeyObj = new Journey(journey);
+        journeyObj.journey.image = "";
+        journeyObj.images = [];
         journeyObj.landmarks = [];
         var dbres = await journeyObj.save();
         if (dbres != null) {
@@ -20,6 +22,21 @@ module.exports = {
         } else {
             console.log(e)
             res.status(400).json({ error: e, success: false });
+        }
+
+        if (journey.journey.image != null) {
+            storeImage(journey.journey.image, shortId(), (err, url) => {
+                journey.journey.image = url;
+                Journey.findOneAndUpdate({ _id: journeyObj.id }, { $set: { journey: journey.journey } }).exec();
+            });
+        }
+
+        if (journey.images != null) {
+            journey.images.forEach((image) => {
+                storeImage(image, shortId(), (err, url) => {
+                    Journey.findOneAndUpdate({ _id: journeyObj.id }, { $push: { images: url } }).exec();
+                });
+            });
         }
 
         if (journey.landmarks != null) {
