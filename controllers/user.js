@@ -29,9 +29,9 @@ module.exports = {
             }
 
             var updateUser = {
-                photo = url,
-                family_name = req.value.body.family_name,
-                given_name = req.value.body.given_name
+                photo : url,
+                family_name : req.value.body.family_name,
+                given_name : req.value.body.given_name
             }
             User.findByIdAndUpdate(req.user.id, updateUser, { upsert: false }).exec()
                 .then((result) => {
