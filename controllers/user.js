@@ -21,13 +21,18 @@ module.exports = {
     editUser: async (req, res, next) => {
         var updateUser = req.value.body;
 
-        storage.storeFile(Buffer.from(updateUser.photo, "base64"), 'profile-pics', updateUser.email, async (err, url) => {
+        storage.storeFile(Buffer.from(req.value.body.photo, "base64"), 'profile-pics', req.value.body.email, async (err, url) => {
             if (err) {
                 console.log("failed to upload profile pic");
                 console.log(err);
                 return res.status(500).json({ success: false, msg: "failed to upload profile pic" });
             }
-            updateUser.photo = url;
+
+            var updateUser = {
+                photo = url,
+                family_name = req.value.body.family_name,
+                given_name = req.value.body.given_name
+            }
             User.findByIdAndUpdate(req.user.id, updateUser, { upsert: false }).exec()
                 .then((result) => {
                     res.send({ success: true });
