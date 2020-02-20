@@ -1,5 +1,6 @@
 const User = require('../models/user');
 const Journey = require('../models/journey');
+const storage = require('../services/cloud-storage');
 
 module.exports = {
     currentUser: async (req, res, next) => {
@@ -14,17 +15,27 @@ module.exports = {
     },
 
     userJourneys: async (req, res, next) => {
-        return Journey.find({user:req.user.id}).lean().exec().then(journeys => res.send(journeys));
+        return Journey.find({ user: req.user.id }).lean().exec().then(journeys => res.send(journeys));
     },
 
     editUser: async (req, res, next) => {
-        User.findByIdAndUpdate(req.user.id, req.user, { upsert: true }).exec()
-            .then((result) => {
-                res.send({ success: true });
-            })
-            .catch((e) => {
-                res.send(e);
-            });
+        var updateUser = req.value.body;
+
+        storage.storeFile(Buffer.from(updateUser.photo, "base64"), 'profile-pics', updateUser.email, async (err, url) => {
+            if (err) {
+                console.log("failed to upload profile pic");
+                console.log(err);
+                return res.status(500).json({ success: false, msg: "failed to upload profile pic" });
+            }
+            updateUser.photo = url;
+            User.findByIdAndUpdate(req.user.id, updateUser, { upsert: false }).exec()
+                .then((result) => {
+                    res.send({ success: true });
+                })
+                .catch((e) => {
+                    res.send(e);
+                });
+        });
     },
 
     unauthorizedUsers: async (req, res, next) => {
