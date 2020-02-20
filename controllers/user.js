@@ -19,7 +19,6 @@ module.exports = {
     },
 
     editUser: async (req, res, next) => {
-        var updateUser = req.value.body;
 
         storage.storeFile(Buffer.from(req.value.body.photo, "base64"), 'profile-pics', req.value.body.email, async (err, url) => {
             if (err) {
