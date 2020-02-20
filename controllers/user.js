@@ -2,6 +2,13 @@ const User = require('../models/user');
 const Journey = require('../models/journey');
 const storage = require('../services/cloud-storage');
 
+function matchUrl(url) {
+    var expression = /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi;
+    var regex = new RegExp(expression);
+
+    return url.match(regex)
+}
+
 module.exports = {
     currentUser: async (req, res, next) => {
         res.status(200).json(req.user);
@@ -20,18 +27,13 @@ module.exports = {
 
     editUser: async (req, res, next) => {
 
-        storage.storeFile(Buffer.from(req.value.body.photo, "base64"), 'profile-pics', req.value.body.email, async (err, url) => {
-            if (err) {
-                console.log("failed to upload profile pic");
-                console.log(err);
-                return res.status(500).json({ success: false, msg: "failed to upload profile pic" });
-            }
+        var updateUser = {
+            family_name: req.body.family_name,
+            given_name: req.body.given_name
+        }
 
-            var updateUser = {
-                photo : url,
-                family_name : req.value.body.family_name,
-                given_name : req.value.body.given_name
-            }
+        if (matchUrl(req.body.photo)) {
+            updateUser.photo = req.body.photo;
             User.findByIdAndUpdate(req.user.id, updateUser, { upsert: false }).exec()
                 .then((result) => {
                     res.send({ success: true });
@@ -39,7 +41,24 @@ module.exports = {
                 .catch((e) => {
                     res.send(e);
                 });
-        });
+        } else {
+            storage.storeFile(Buffer.from(req.body.photo, "base64"), 'profile-pics', req.body.email, async (err, url) => {
+                if (err) {
+                    console.log("failed to upload profile pic");
+                    console.log(err);
+                    return res.status(500).json({ success: false, msg: "failed to upload profile pic" });
+                }
+
+                updateUser.photo = url;
+                User.findByIdAndUpdate(req.user.id, updateUser, { upsert: false }).exec()
+                    .then((result) => {
+                        res.send({ success: true });
+                    })
+                    .catch((e) => {
+                        res.send(e);
+                    });
+            });
+        }
     },
 
     unauthorizedUsers: async (req, res, next) => {

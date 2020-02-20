@@ -16,6 +16,7 @@ router.route('/journeys').get(userController.userJourneys);
 
 router.route('/authorize/:userId').post(userController.authorizeUser);
 
-router.route('/edit').post(validateBody(schemas.updateUserSchema), userController.editUser);
+// router.route('/edit').post(validateBody(schemas.updateUserSchema), userController.editUser);
+router.route('/edit').post( userController.editUser);
 
 module.exports = router;
